@@ -1,0 +1,163 @@
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+             xmlns:xs="http://www.w3.org/2001/XMLSchema"
+             xmlns:tns="http://www.example.org/calculator"
+             name="CalculatorService"
+             targetNamespace="http://www.example.org/calculator">
+
+    <types>
+        <xs:schema targetNamespace="http://www.example.org/calculator">
+            <xs:element name="Add">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="intA" type="xs:int"/>
+                        <xs:element name="intB" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="AddResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="AddResult" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Pow">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="intA" type="xs:int"/>
+                        <xs:element name="intB" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="PowResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="PowResult" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Mult">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="intA" type="xs:int"/>
+                        <xs:element name="intB" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="MultResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="MultResult" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Div">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="intA" type="xs:int"/>
+                        <xs:element name="intB" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="DivResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="DivResult" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </types>
+
+    <message name="AddRequest">
+        <part name="parameters" element="tns:Add"/>
+    </message>
+    <message name="AddResponse">
+        <part name="parameters" element="tns:AddResponse"/>
+    </message>
+    <message name="PowRequest">
+        <part name="parameters" element="tns:Pow"/>
+    </message>
+    <message name="PowResponse">
+        <part name="parameters" element="tns:PowResponse"/>
+    </message>
+    <message name="MultRequest">
+        <part name="parameters" element="tns:Mult"/>
+    </message>
+    <message name="MultResponse">
+        <part name="parameters" element="tns:MultResponse"/>
+    </message>
+    <message name="DivRequest">
+        <part name="parameters" element="tns:Div"/>
+    </message>
+    <message name="DivResponse">
+        <part name="parameters" element="tns:DivResponse"/>
+    </message>
+
+
+    <portType name="CalculatorPortType">
+        <operation name="Add">
+            <input message="tns:AddRequest"/>
+            <output message="tns:AddResponse"/>
+        </operation>
+        <operation name="Pow">
+            <input message="tns:PowRequest"/>
+            <output message="tns:PowResponse"/>
+        </operation>
+        <operation name="Mult">
+            <input message="tns:MultRequest"/>
+            <output message="tns:MultResponse"/>
+        </operation>
+        <operation name="Div">
+            <input message="tns:DivRequest"/>
+            <output message="tns:DivResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="CalculatorBinding" type="tns:CalculatorPortType">
+        <soap12:binding style="rpc" transport="http://www.w3.org/2003/05/soap/bindings/HTTP/"/>
+        <operation name="Add">
+            <soap12:operation soapAction="http://www.example.org/calculator/Add"/>
+            <input>
+                <soap12:body use="literal"/>
+            </input>
+            <output>
+                <soap12:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="Pow">
+            <soap12:operation soapAction="http://www.example.org/calculator/Pow"/>
+            <input>
+                <soap12:body use="literal"/>
+            </input>
+            <output>
+                <soap12:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="Mult">
+            <soap12:operation soapAction="http://www.example.org/calculator/Mult"/>
+            <input>
+                <soap12:body use="literal"/>
+            </input>
+            <output>
+                <soap12:body use="literal"/>
+            </output>
+        </operation>
+        <operation name="Div">
+            <soap12:operation soapAction="http://www.example.org/calculator/Div"/>
+            <input>
+                <soap12:body use="literal"/>
+            </input>
+            <output>
+                <soap12:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+
+    <service name="CalculatorService">
+        <port name="CalculatorPort" binding="tns:CalculatorBinding">
+            <soap12:address location="http://localhost:3000/calculator"/>
+        </port>
+    </service>
+</definitions>
