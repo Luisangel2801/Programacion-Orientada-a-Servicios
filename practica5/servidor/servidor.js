@@ -7,29 +7,20 @@ const PORT = 3000;
 
 app.use(express.json());
 
-// leer el archivo de operaciones.json  y guardarlo en la variable operaciones
+//leer el archivo de operaciones.json  y guardarlo en la variable operaciones
 let calculos = [];
-/*try {
+try {
     const data = fs.readFileSync('./operaciones.json', 'utf8');
     calculos = JSON.parse(data);
 }
 catch (err) {
     console.error(err);
-}*/
+}
 // Guardar las operaciones en el archivo operaciones.json
-/*const saveCalculos = () => {
+const saveCalculos = () => {
     const data = JSON.stringify(calculos);
     fs.writeFileSync('./operaciones.json', data, 'utf8');
-};*/
-
-// leer el archivo de operaciones.json  y guardarlo en la variable operaciones
-/*try {
-    const data = fs.readFileSync('./operaciones.json', 'utf8');
-    calculos = JSON.parse(data);
-}
-catch (err) {
-    console.error(err);
-}*/
+};
 
 /*      SERVICIOS REST       */
 
@@ -39,9 +30,8 @@ app.delete('/calculos/:id', (req, res) => {
     if (indiceCalculo === -1) {
         return res.status(404).send("Operacion no encontrada");
     }
-    
     const calculoEliminado = calculos.splice(indiceCalculo, 1);
-    //saveCalculos();
+    saveCalculos();
     res.json(calculoEliminado[0]);
 });
 
@@ -82,7 +72,7 @@ app.post('/calculos', (req, res) => {
         operacion: req.body.operacion,
     };
     calculos.push(nuevoCalculo);
-    //saveCalculos();
+    saveCalculos();
     res.status(201).json(nuevoCalculo);
 });
 

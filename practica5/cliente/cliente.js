@@ -41,16 +41,17 @@ async function obtenerOperacion() {
     console.log("Cálculos:" , data);
 }
 /*
-async function actualizarOperacion(id, dato) {
+async function actualizarOperacion(id, intA, intB, operacion) {
     const response = await fetch(`${REST_URL}/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(dato)
+        body: JSON.stringify({ intA, intB, operacion })
     });
     const calculoActualizado = await response.json();
     console.log("Cálculo actualizado:", calculoActualizado);
+    return calculoActualizado;
 }
 */
 async function eliminarOperacion(id) {
@@ -98,15 +99,16 @@ async function main() {
     try {
         for(;;){
             console.log('\n===========================');
-            console.log('Selecciona un método REST')
-            console.log('1. GET')
-            console.log('2. POST')
-            console.log('3. PUT')
-            console.log('4. DELETE')
+            console.log('Selecciona una opción:');
+            console.log('1. Obtener Cálculos');
+            console.log('2. Agregar Cálculo');
+            console.log('3. Editar Cálculo');
+            console.log('4. Eliminar Cálculo');
+            console.log('5. Salir');
             console.log('===========================');
             const metodo = await askQuestion('Seleccione el número del método REST (1-4): ');
             
-            if (!['1', '2', '3', '4'].includes(metodo)) {
+            if (!['1', '2', '3', '4','5'].includes(metodo)) {
                 console.log('Error: Debe seleccionar un método REST válido');
                 rl.close();
                 return;
@@ -141,23 +143,22 @@ async function main() {
                     rl.close();
                     return;
                 }
-                // Llamada a Servicios REST
                 const calculo = await enviarNumerosREST(num1, num2, operacion);
-                
-                // Llamada a Servicios SOAP
                 await realizarOperacionSOAP(calculo.intA, calculo.intB, calculo.operacion);
             }else if(metodo === '3'){
-                console.log('Método no implementado PUT');
+                console.log('Método no implementado');
                 /*
                 const id = await askQuestion('Ingrese el ID de la operación a actualizar: ');
                 const A = await askQuestion('Ingrese el primer número (intA): ');
                 const B = await askQuestion('Ingrese el segundo número (intB): ');
                 const op = await askQuestion('Ingrese el número de la operación (1-4): ');
-                await actualizarOperacion(id, {intA: A, intB: B, operacion: op});
+                await actualizarOperacion(id, A, B, op);
                 */
             }else if(metodo === '4'){
                 const id = await askQuestion('Ingrese el ID de la operación a eliminar: ');
                 await eliminarOperacion(id);
+            }else if(metodo === '5'){
+                break;
             }else{
                 console.log('No se seleccionó un método válido');
             }
