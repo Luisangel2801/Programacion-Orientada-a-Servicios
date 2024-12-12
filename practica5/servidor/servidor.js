@@ -32,26 +32,20 @@ catch (err) {
 }*/
 
 /*      SERVICIOS REST       */
-/*
+
 app.delete('/calculos/:id', (req, res) => {
-
-    console.log('hola entre al delete');
     const id = parseInt(req.params.id);
-    const calculo = calculos.findIndex(c => c.id === id);
-
-    console.log(calculo);
-
-    if (calculo === -1) {
+    const indiceCalculo = calculos.findIndex(c => c.id === id);
+    if (indiceCalculo === -1) {
         return res.status(404).send("Operacion no encontrada");
     }
     
-    const calculoEliminado = calculos.splice(calculo, 1);
-    saveCalculos();
+    const calculoEliminado = calculos.splice(indiceCalculo, 1);
+    //saveCalculos();
     res.json(calculoEliminado[0]);
-});*/
+});
 
 app.get('/calculos/:id',(req,res)=>{
-    console.log('Obtener');
     const id = parseInt(req.params.id);
     const calculo = calculos.find(c => c.id === id);
     if(!calculo){
