@@ -35,12 +35,12 @@ async function enviarNumerosREST(intA, intB, operacion) {
     return nuevoCalculo;
 }
 
-async function obtenerOperacion() {
+async function obtenerOperaciones() {
     const response = await fetch(`${REST_URL}`);
     const data = await response.json();
     console.log("Cálculos:" , data);
 }
-/*
+
 async function actualizarOperacion(id, intA, intB, operacion) {
     const response = await fetch(`${REST_URL}/${id}`, {
         method: 'PUT',
@@ -49,18 +49,22 @@ async function actualizarOperacion(id, intA, intB, operacion) {
         },
         body: JSON.stringify({ intA, intB, operacion })
     });
-    const calculoActualizado = await response.json();
-    console.log("Cálculo actualizado:", calculoActualizado);
-    return calculoActualizado;
+    if (response.ok) {
+        const calculoActualizado = await response.json();
+        console.log("Cálculo actualizado:", calculoActualizado);
+        return calculoActualizado;
+    } else {
+        console.log("Error al actualizar la operación. Verifica el ID.");
+    }
 }
-*/
+
 async function eliminarOperacion(id) {
     const response = await fetch(`${REST_URL}/${id}`, {
         method: 'DELETE',
-    })
+    });
     if(response.ok){
         console.log(`Operación con ID ${id} eliminada`);
-    }else{
+    } else {
         console.log(`Error al eliminar la operación con ID ${id}`);
     }
 }
@@ -93,11 +97,11 @@ async function realizarOperacionSOAP(intA, intB, operacion) {
             break;
     }
 }
-  
+
 /* Función principal */
 async function main() {
     try {
-        for(;;){
+        while (true) {
             console.log('\n===========================');
             console.log('Selecciona una opción:');
             console.log('1. Obtener Cálculos');
@@ -106,28 +110,18 @@ async function main() {
             console.log('4. Eliminar Cálculo');
             console.log('5. Salir');
             console.log('===========================');
-            const metodo = await askQuestion('Seleccione el número del método REST (1-4): ');
-            
-            if (!['1', '2', '3', '4','5'].includes(metodo)) {
+            const metodo = await askQuestion('Seleccione el número del método REST (1-5): ');
+
+            if (!['1', '2', '3', '4', '5'].includes(metodo)) {
                 console.log('Error: Debe seleccionar un método REST válido');
-                rl.close();
-                return;
+                continue;
             }
 
-            if(metodo === '1'){
-                await obtenerOperacion();
-            }else if(metodo === '2'){
-                const intA = await askQuestion('Ingrese el primer número (intA): ');
-                const intB = await askQuestion('Ingrese el segundo número (intB): ');
-
-                const num1 = parseFloat(intA);
-                const num2 = parseFloat(intB);
-
-                if (isNaN(num1) || isNaN(num2)) {
-                    console.log('Error: Debe ingresar números válidos');
-                    rl.close();
-                    return;
-                }
+            if (metodo === '1') {
+                await obtenerOperaciones();
+            } else if (metodo === '2') {
+                const intA = parseFloat(await askQuestion('Ingrese el primer número (intA): '));
+                const intB = parseFloat(await askQuestion('Ingrese el segundo número (intB): '));
                 console.log('\n***************************');
                 console.log('Opciones de operación:');
                 console.log('1. Suma');
@@ -137,37 +131,35 @@ async function main() {
                 console.log('***************************');
                 const operacion = await askQuestion('Seleccione el número de la operación (1-4): ');
 
-                // Validar operación
-                if (!['1', '2', '3', '4'].includes(operacion)) {
-                    console.log('Error: Debe seleccionar una operación válida');
-                    rl.close();
-                    return;
-                }
-                const calculo = await enviarNumerosREST(num1, num2, operacion);
-                await realizarOperacionSOAP(calculo.intA, calculo.intB, calculo.operacion);
-            }else if(metodo === '3'){
-                console.log('Método no implementado');
-                /*
-                const id = await askQuestion('Ingrese el ID de la operación a actualizar: ');
-                const A = await askQuestion('Ingrese el primer número (intA): ');
-                const B = await askQuestion('Ingrese el segundo número (intB): ');
-                const op = await askQuestion('Ingrese el número de la operación (1-4): ');
-                await actualizarOperacion(id, A, B, op);
-                */
-            }else if(metodo === '4'){
-                const id = await askQuestion('Ingrese el ID de la operación a eliminar: ');
+                await enviarNumerosREST(intA, intB, operacion);
+            } else if (metodo === '3') {
+                await obtenerOperaciones();
+                const id = parseInt(await askQuestion('Ingresa el ID de la operación a editar: '));
+                const intA = parseFloat(await askQuestion('Ingrese el nuevo valor para intA: '));
+                const intB = parseFloat(await askQuestion('Ingrese el nuevo valor para intB: '));
+                console.log('\n***************************');
+                console.log('Opciones de operación:');
+                console.log('1. Suma');
+                console.log('2. Potencia');
+                console.log('3. Multiplicación');
+                console.log('4. División');
+                console.log('***************************');
+                const operacion = await askQuestion('Seleccione el número de la operación (1-4): ');
+
+                await actualizarOperacion(id, intA, intB, operacion);
+            } else if (metodo === '4') {
+                const id = parseInt(await askQuestion('Ingrese el ID de la operación a eliminar: '));
                 await eliminarOperacion(id);
-            }else if(metodo === '5'){
+            } else if (metodo === '5') {
+                console.log('Saliendo...');
                 break;
-            }else{
-                console.log('No se seleccionó un método válido');
             }
         }
-        rl.close();
     } catch (error) {
         console.error('Ocurrió un error:', error);
+    } finally {
         rl.close();
     }
 }
 
-main().catch(console.error);
+main();

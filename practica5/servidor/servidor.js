@@ -7,15 +7,15 @@ const PORT = 3000;
 
 app.use(express.json());
 
-//leer el archivo de operaciones.json  y guardarlo en la variable operaciones
+// Leer el archivo de operaciones.json y guardarlo en la variable operaciones
 let calculos = [];
 try {
     const data = fs.readFileSync('./operaciones.json', 'utf8');
     calculos = JSON.parse(data);
-}
-catch (err) {
+} catch (err) {
     console.error(err);
 }
+
 // Guardar las operaciones en el archivo operaciones.json
 const saveCalculos = () => {
     const data = JSON.stringify(calculos);
@@ -35,38 +35,39 @@ app.delete('/calculos/:id', (req, res) => {
     res.json(calculoEliminado[0]);
 });
 
-app.get('/calculos/:id',(req,res)=>{
+app.get('/calculos/:id', (req, res) => {
     const id = parseInt(req.params.id);
     const calculo = calculos.find(c => c.id === id);
-    if(!calculo){
-        return res.status(404).json({error: 'El calculo no existe'});
+    if (!calculo) {
+        return res.status(404).json({ error: 'El calculo no existe' });
     }
-    res.json(calculo); 
-})
+    res.json(calculo);
+});
 
 app.get('/calculos', (req, res) => {
     res.json(calculos);
 });
-/*
+
 app.put('/calculos/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const { intA, intB, operacion } = req.body;
 
-    const { id } = req.params;
-    const opId = parseInt(id);
-    const { intA, intB, operacion} = req.body;
+    const calculo = calculos.find(c => c.id === id);
+    if (!calculo) {
+        return res.status(404).json({ error: 'El calculo no existe' });
+    }
 
-    console.log('Antes de actualizar', calculos[opId]);
+    if (intA !== undefined) calculo.intA = intA;
+    if (intB !== undefined) calculo.intB = intB;
+    if (operacion !== undefined) calculo.operacion = operacion;
 
-    calculos[opId].intA = intA || calculos[opId].intA;
-    calculos[opId].intB = intB || calculos[opId].intB;
-    calculos[opId].operacion = operacion || calculos[opId].operacion;
-
-    console.log('Déspues de actualizar', calculos[opId]);
     saveCalculos();
+    res.json(calculo);
 });
-*/
+
 app.post('/calculos', (req, res) => {
     const nuevoCalculo = {
-        id: calculos.length + 1,
+        id: calculos.length > 0 ? calculos[calculos.length - 1].id + 1 : 1,
         intA: req.body.intA,
         intB: req.body.intB,
         operacion: req.body.operacion,
@@ -80,26 +81,26 @@ app.post('/calculos', (req, res) => {
 
 const service = {
     CalculatorService: {
-        CalculatorPort:{
-            Add: function(args,callback){
+        CalculatorPort: {
+            Add: function (args, callback) {
                 const intA = args.intA;
                 const intB = args.intB;
                 const result = intA + intB;
-                callback(null,{AddResult: result});
+                callback(null, { AddResult: result });
             },
-            Pow: function(args,callback){
+            Pow: function (args, callback) {
                 const intA = args.intA;
                 const intB = args.intB;
-                const result = Math.pow(intA,intB);
-                callback(null,{PowResult: result});
+                const result = Math.pow(intA, intB);
+                callback(null, { PowResult: result });
             },
-            Mult: function(args,callback){
+            Mult: function (args, callback) {
                 const intA = args.intA;
                 const intB = args.intB;
                 const result = intA * intB;
-                callback(null,{MultResult: result});
+                callback(null, { MultResult: result });
             },
-            Div: function(args,callback){
+            Div: function (args, callback) {
                 const intA = args.intA;
                 const intB = args.intB;
                 if (intB === 0) {
@@ -111,14 +112,13 @@ const service = {
             }
         }
     }
-}
+};
 
-
-const wsdlPath = path.join(__dirname,'requerimientos.wsdl');
-const wsdl = fs.readFileSync(wsdlPath,'utf8');
+const wsdlPath = path.join(__dirname, 'requerimientos.wsdl');
+const wsdl = fs.readFileSync(wsdlPath, 'utf8');
 
 app.listen(PORT, () => {
     soap.listen(app, '/calculator', service, wsdl);
     console.log(`Servicio REST corriendo en http://localhost:${PORT}`);
     console.log(`Servicio SOAP corriendo en http://localhost:${PORT}/calculator`);
-  });
+});
