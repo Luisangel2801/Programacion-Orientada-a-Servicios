@@ -7,12 +7,35 @@ const PORT = 3000;
 
 app.use(express.json());
 
-let calculos =[]
+// leer el archivo de operaciones.json  y guardarlo en la variable operaciones
+let calculos = [];
+/*try {
+    const data = fs.readFileSync('./operaciones.json', 'utf8');
+    calculos = JSON.parse(data);
+}
+catch (err) {
+    console.error(err);
+}*/
+// Guardar las operaciones en el archivo operaciones.json
+/*const saveCalculos = () => {
+    const data = JSON.stringify(calculos);
+    fs.writeFileSync('./operaciones.json', data, 'utf8');
+};*/
 
+// leer el archivo de operaciones.json  y guardarlo en la variable operaciones
+/*try {
+    const data = fs.readFileSync('./operaciones.json', 'utf8');
+    calculos = JSON.parse(data);
+}
+catch (err) {
+    console.error(err);
+}*/
 
 /*      SERVICIOS REST       */
-
+/*
 app.delete('/calculos/:id', (req, res) => {
+
+    console.log('hola entre al delete');
     const id = parseInt(req.params.id);
     const calculo = calculos.findIndex(c => c.id === id);
 
@@ -23,21 +46,24 @@ app.delete('/calculos/:id', (req, res) => {
     }
     
     const calculoEliminado = calculos.splice(calculo, 1);
+    saveCalculos();
     res.json(calculoEliminado[0]);
-});
+});*/
 
 app.get('/calculos/:id',(req,res)=>{
+    console.log('Obtener');
     const id = parseInt(req.params.id);
     const calculo = calculos.find(c => c.id === id);
     if(!calculo){
         return res.status(404).json({error: 'El calculo no existe'});
-    } 
+    }
+    res.json(calculo); 
 })
 
 app.get('/calculos', (req, res) => {
     res.json(calculos);
 });
-
+/*
 app.put('/calculos/:id', (req, res) => {
 
     const { id } = req.params;
@@ -51,8 +77,9 @@ app.put('/calculos/:id', (req, res) => {
     calculos[opId].operacion = operacion || calculos[opId].operacion;
 
     console.log('Déspues de actualizar', calculos[opId]);
+    saveCalculos();
 });
-
+*/
 app.post('/calculos', (req, res) => {
     const nuevoCalculo = {
         id: calculos.length + 1,
@@ -61,6 +88,7 @@ app.post('/calculos', (req, res) => {
         operacion: req.body.operacion,
     };
     calculos.push(nuevoCalculo);
+    //saveCalculos();
     res.status(201).json(nuevoCalculo);
 });
 
